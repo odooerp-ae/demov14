@@ -10,18 +10,20 @@ class MeasurementRequest(models.Model):
 
     name = fields.Char(index=True, default='New')
     partner_id = fields.Many2one(comodel_name="res.partner", string="Customer", required=True,
-                                 tracking=True, states={'design': [('readonly', True)]})
+                                 tracking=True,
+                                 states={'cancel': [('readonly', True)],'design': [('readonly', True)]})
     state = fields.Selection(selection=[('new', 'New'),
                                         ('measured', 'Measured'),
                                         ('design', 'Design'),
+                                        ('cancel', 'Cancel'),
                                         ],
                              required=True, default='new', tracking=True)
-    schedule_date = fields.Date(states={'design': [('readonly', True)]}, tracking=True)
+    schedule_date = fields.Date(states={'cancel': [('readonly', True)], 'design': [('readonly', True)]}, tracking=True)
     employee_id = fields.Many2one(comodel_name="hr.employee", string="Technician",
-                                  states={'design': [('readonly', True)]}, tracking=True)
+                                  states={'cancel': [('readonly', True)], 'design': [('readonly', True)]}, tracking=True)
     line_ids = fields.One2many(comodel_name="measurement.request.line", inverse_name="measure_request_id",
-                               states={'design': [('readonly', True)]})
-    sale_order_id = fields.Many2one(comodel_name="sale.order", copy=False)
+                               states={'cancel': [('readonly', True)], 'design': [('readonly', True)]})
+    sale_order_id = fields.Many2one(comodel_name="sale.order", copy=False, string="Quotation")
     is_so_created = fields.Boolean(string="Quotation Created", copy=False)
 
     @api.model
@@ -35,6 +37,14 @@ class MeasurementRequest(models.Model):
 
     def set_to_design(self):
         self.state = 'design'
+        return True
+
+    def action_new(self):
+        self.state = 'new'
+        return True
+
+    def action_cancel(self):
+        self.state = 'cancel'
         return True
 
     def action_create_quotation(self):
@@ -57,6 +67,7 @@ class MeasurementLine(models.Model):
                                  domain=[("type", '=', "service")])
     quantity = fields.Float()
     description = fields.Char()
+    price = fields.Float()
 
     @api.onchange('product_id')
     def product_id_change(self):

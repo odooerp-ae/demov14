@@ -8,14 +8,18 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     measure_request_id = fields.Many2one(comodel_name="measurement.request", copy=False)
-    state = fields.Selection(selection_add=[('advance_payment', 'Advance Payment'),
-                                            ('final_measurement', 'Final Measurement'),
-                                            ('production_payment', 'Production Payment'),
-                                            ('payment_finalize', 'Payment Finalize'),
-
-                                            ('rejected', 'Rejected'),
-                                            ],
-                             )
+    state = fields.Selection([
+        ('draft', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('sale', 'Contract'),
+        ('advance_payment', 'Advance Payment'),
+        ('final_measurement', 'Final Measurement'),
+        ('production_payment', 'Production Payment'),
+        ('payment_finalize', 'Payment Finalize'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
+        ('rejected', 'Rejected'),
+    ], string='Status', readonly=True, copy=False, index=True, tracking=3, default='draft')
     payment_ids = fields.One2many(comodel_name="account.payment", inverse_name="sale_order_id", copy=False)
 
     paid_amount = fields.Monetary(string="Total Paid Amount", compute='_compute_payment_amount', store=True)

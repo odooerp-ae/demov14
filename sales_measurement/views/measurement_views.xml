@@ -20,6 +20,18 @@
                             class="btn-primary"/>
 
                     <button type="object"
+                            string="cancel"
+                            name="action_cancel"
+                            states="measured,design"
+                            class="btn-primary"/>
+
+                    <button type="object"
+                            string="Reset To New"
+                            name="action_new"
+                            states="cancel"
+                            class="btn-primary"/>
+
+                    <button type="object"
                             string="Create Quotation"
                             name="action_create_quotation"
                             class="btn-primary"
@@ -52,6 +64,7 @@
                                     <field name="product_id"/>
                                     <field name="description"/>
                                     <field name="quantity"/>
+                                    <field name="price"/>
                                 </tree>
                             </field>
                         </page>
