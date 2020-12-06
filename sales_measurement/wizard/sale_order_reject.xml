@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sale_order_reject_form" model="ir.ui.view">
+            <field name="name">sale.order.reject.wizard</field>
+            <field name="model">sale.order.reject.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="reject_reason_id"/>
+                    </group>
+                    <footer>
+                        <button name="reject_so" string="Reject" type="object" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="sale_order_reject_wizard_action" model="ir.actions.act_window">
+            <field name="name">Rejection Reasons</field>
+            <field name="res_model">sale.order.reject.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

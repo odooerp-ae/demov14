@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+     <record id="action_so_reject_reason" model="ir.actions.act_window">
+         <field name="name">SO Reject Reasons</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="res_model">sale.order.reject</field>
+         <field name="view_mode">tree,form</field>
+         <field name="help" type="html">
+           <p class="oe_view_nocontent_create">
+             <!-- Add Text Here -->
+           </p><p>
+             <!-- More details about what a user can do with this object will be OK -->
+           </p>
+         </field>
+     </record>
+
+     <menuitem id="menu_so_reject_reason" name="SO Reject Reasons"
+              parent="sale.menu_sale_config"
+              action="action_so_reject_reason" sequence="100"/>
+</odoo>

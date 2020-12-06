@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" name="action_view_payments"
+                        string="Payments" type="object"
+                        widget="statinfo" icon="fa-usd"/>
+            </div>
+
+            <xpath expr="//header" position="inside">
+
+                <button name="action_so_register_payment" id="account_invoice_payment_btn"
+                        type="object" class="oe_highlight" string="Register Payment"
+                        attrs="{'invisible': [('state', 'in', ('done', 'cancel', 'rejected'))]}"
+                />
+                <button name="action_set_to_final_measurement" id="action_set_to_final_measurement"
+                        type="object" class="oe_highlight" string="Final Measurement"
+                        attrs="{'invisible': [('state', 'not in', ('advance_payment'))]}"
+                />
+                <button name="%(sale_order_reject_wizard_action)d"
+                        string="Reject" context="{'default_sale_order_id': active_id}"
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"
+                        type="action"/>
+
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'sent', 'rejected'])]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('so_auto_confirm', '!=', 'none'),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="measure_request_id" readonly="1"/>
+                <field name="so_auto_confirm" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="paid_amount" readonly="1"/>
+                <field name="unpaid_amount" readonly="1"/>
+                <field name="paid_amount_percent" readonly="1"/>
+            </xpath>
+
+            <xpath expr="//page[last()]" position="after">
+                <page name="reject_reason" string="Reject Reason"
+                      attrs="{'invisible':[('state','!=','rejected')],'readonly': True}">
+                    <group>
+                        <group>
+                            <field name="reject_reason_id"
+                                   attrs="{'invisible':[('state','!=','rejected')],'readonly':True}"/>
+                        </group>
+                        <group>
+                        </group>
+
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="domain">[('state', 'not in', ('rejected', 'draft', 'sent'))]</field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('rejected', 'draft', 'sent'))]</field>
+    </record>
+
+    <record model="ir.ui.menu" id="sale.menu_sale_order">
+        <field name="name">Contracts</field>
+      </record>
+</odoo>
