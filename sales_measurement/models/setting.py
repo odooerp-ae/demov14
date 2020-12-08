@@ -6,14 +6,11 @@ from odoo import fields, models
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    so_auto_confirm = fields.Selection(string="When to confirm SO",
-                                       selection=[('production_payment', 'Production Payment'),
-                                                  ('none', 'None'),
-                                                  ('payment_finalize', 'Payment Finalize'), ],
-                                       default='none')
+
+    is_auto_confirm = fields.Boolean(string="Auto confirm SO when Production Payment or Payment Finalize",  )
 
 
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    so_auto_confirm = fields.Selection(related="company_id.so_auto_confirm", readonly=False)
+    is_auto_confirm = fields.Boolean(related="company_id.is_auto_confirm", readonly=False)

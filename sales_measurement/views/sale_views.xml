@@ -32,14 +32,14 @@
                 <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'sent', 'rejected'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('so_auto_confirm', '!=', 'none'),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('is_auto_confirm', '!=', 'none'),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': True}</attribute>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="measure_request_id" readonly="1"/>
-                <field name="so_auto_confirm" invisible="1"/>
+                <field name="is_auto_confirm" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='amount_total']" position="after">
                 <field name="paid_amount" readonly="1"/>

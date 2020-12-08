@@ -27,7 +27,7 @@ class SaleOrder(models.Model):
     paid_amount_percent = fields.Float(compute='_compute_payment_amount', store=True, string="Paid %")
     reject_reason_id = fields.Many2one(comodel_name="sale.order.reject", string="Reject Reason", copy=False)
     is_auto_rejected = fields.Boolean(copy=False)
-    so_auto_confirm = fields.Selection(related="company_id.so_auto_confirm", store=True)
+    is_auto_confirm = fields.Boolean(related="company_id.is_auto_confirm", store=True)
 
     @api.depends('payment_ids.amount',
                  'payment_ids.state', 'amount_total', 'state')
@@ -100,9 +100,8 @@ class SaleOrder(models.Model):
         return True
 
     def _check_auto_confirm(self):
-        so_auto_confirm = self.env.company.so_auto_confirm
-
-        if so_auto_confirm != 'none':
-            auto_orders = self.filtered(lambda s: s.state == so_auto_confirm)
+        is_auto_confirm = self.env.company.is_auto_confirm
+        if is_auto_confirm:
+            auto_orders = self.filtered(lambda s: s.state in ['payment_finalize', 'production_payment'])
             auto_orders.action_confirm()
         return True

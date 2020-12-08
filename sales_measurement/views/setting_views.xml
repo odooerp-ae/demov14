@@ -8,12 +8,12 @@
             <xpath expr="//field[@name='group_proforma_sales']/../.." position="after">
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_left_pane">
+                        <div class="mt8">
+                            <field name="is_auto_confirm"/>
+                        </div>
                     </div>
                     <div class="o_setting_right_pane">
-                        <label for="so_auto_confirm"/>
-                        <div class="mt8">
-                            <field name="so_auto_confirm" class="o_light_label" widget="radio"/>
-                        </div>
+                        <label for="is_auto_confirm"/>
                     </div>
                 </div>
             </xpath>
