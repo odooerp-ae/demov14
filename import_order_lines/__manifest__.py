@@ -45,7 +45,8 @@ Importar datos de clientes potenciales, agregar clientes potenciales de excel. I
     'depends': ['base','sale_management'],
     'data': [
                 'security/ir.model.access.csv',
-                'views/import_order_lines_view.xml'
+                'views/import_order_lines_view.xml',
+                'views/setting_views.xml',
             ],
     'demo': [],
     'test': [],
