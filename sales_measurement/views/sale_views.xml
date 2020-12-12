@@ -32,12 +32,13 @@
                 <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'sent', 'rejected'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('is_auto_confirm', '!=', 'none'),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('is_auto_confirm', '=', True),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': True}</attribute>
             </xpath>
-            <xpath expr="//field[@name='partner_id']" position="after">
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="quotation_ref" readonly="1" />
                 <field name="measure_request_id" readonly="1"/>
                 <field name="is_auto_confirm" invisible="1"/>
             </xpath>
@@ -66,6 +67,7 @@
     </record>
 
     <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="name">Contracts</field>
         <field name="domain">[('state', 'not in', ('rejected', 'draft', 'sent'))]</field>
     </record>
 

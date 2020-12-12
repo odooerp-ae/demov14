@@ -5,11 +5,11 @@
     'version': '14.0.1.0.0',
     'category': 'Sales',
     'depends': [
-        'sale_management',
         'sale_mrp',
         'account_accountant',
         'hr',
         'base_automation',
+        'sale_quotation_number',
     ],
     'data': [
         'data/data.xml',

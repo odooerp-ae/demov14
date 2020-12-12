@@ -8,18 +8,13 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     measure_request_id = fields.Many2one(comodel_name="measurement.request", copy=False)
-    state = fields.Selection([
-        ('draft', 'Quotation'),
-        ('sent', 'Quotation Sent'),
-        ('sale', 'Contract'),
-        ('advance_payment', 'Advance Payment'),
-        ('final_measurement', 'Final Measurement'),
-        ('production_payment', 'Production Payment'),
-        ('payment_finalize', 'Payment Finalize'),
-        ('done', 'Locked'),
-        ('cancel', 'Cancelled'),
-        ('rejected', 'Rejected'),
-    ], string='Status', readonly=True, copy=False, index=True, tracking=3, default='draft')
+    state = fields.Selection(selection_add=[('advance_payment', 'Advance Payment'),
+                                            ('final_measurement', 'Final Measurement'),
+                                            ('production_payment', 'Production Payment'),
+                                            ('payment_finalize', 'Payment Finalize'),
+                                            ('rejected', 'Rejected'),
+                                            ],
+                             )
     payment_ids = fields.One2many(comodel_name="account.payment", inverse_name="sale_order_id", copy=False)
 
     paid_amount = fields.Monetary(string="Total Paid Amount", compute='_compute_payment_amount', store=True)
@@ -28,6 +23,7 @@ class SaleOrder(models.Model):
     reject_reason_id = fields.Many2one(comodel_name="sale.order.reject", string="Reject Reason", copy=False)
     is_auto_rejected = fields.Boolean(copy=False)
     is_auto_confirm = fields.Boolean(related="company_id.is_auto_confirm", store=True)
+    quotation_ref = fields.Char(copy=False)
 
     @api.depends('payment_ids.amount',
                  'payment_ids.state', 'amount_total', 'state')
@@ -36,7 +32,7 @@ class SaleOrder(models.Model):
             paid_amount = 0.0
             payments = rec.payment_ids.filtered(lambda p:p.state == 'posted')
             for payment in payments:
-                paid_amount += payment.currency_id._convert(payment.amount, rec.currency_id, self.company_id, rec.date_order)
+                paid_amount += payment.currency_id._convert(payment.amount, rec.currency_id, rec.company_id, rec.date_order)
 
             rec.paid_amount = paid_amount
 
@@ -45,8 +41,12 @@ class SaleOrder(models.Model):
 
             if rec.paid_amount_percent > 0.0 and rec.state in ['draft', 'sent']:
                 rec.state = 'advance_payment'
+                if not rec.company_id.keep_name_so and not rec.quotation_ref:
+                    rec.quotation_ref = rec.name
+                    rec.name = self.env["ir.sequence"].next_by_code("sale.order")
 
-            elif rec.paid_amount_percent >= 75 and rec.paid_amount_percent < 100 and rec.state == 'final_measurement':
+            elif rec.paid_amount_percent >= 75 and rec.paid_amount_percent < 100 and \
+                rec.state == 'final_measurement' and  rec.company_id.add_production_payment:
                 rec.state = 'production_payment'
 
             elif rec.paid_amount_percent >= 100 and rec.state == 'final_measurement':

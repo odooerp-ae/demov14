@@ -16,6 +16,16 @@
                         <label for="is_auto_confirm"/>
                     </div>
                 </div>
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <div class="mt8">
+                            <field name="add_production_payment"/>
+                        </div>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="add_production_payment"/>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>

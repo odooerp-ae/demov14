@@ -21,28 +21,18 @@ class SaleOrder(models.Model):
             vals["name"] = self.env["ir.sequence"].next_by_code("sale.quotation") or "/"
         return super(SaleOrder, self).create(vals)
 
-    def copy(self, default=None):
-        self.ensure_one()
-        if default is None:
-            default = {}
-        default["name"] = "/"
-        if self.origin and self.origin != "":
-            default["origin"] = self.origin + ", " + self.name
-        else:
-            default["origin"] = self.name
-        return super(SaleOrder, self).copy(default)
 
-    def action_confirm(self):
-        for order in self:
-            if order.state not in ("sale", "done", "cancel") and not order.company_id.keep_name_so:
-                if order.origin and order.origin != "":
-                    quo = order.origin + ", " + order.name
-                else:
-                    quo = order.name
-                order.write(
-                    {
-                        "origin": quo,
-                        "name": self.env["ir.sequence"].next_by_code("sale.order"),
-                    }
-                )
-        return super().action_confirm()
+    # def action_confirm(self):
+    #     for order in self:
+    #         if order.state not in ("sale", "done", "cancel") and not order.company_id.keep_name_so:
+    #             if order.origin and order.origin != "":
+    #                 quo = order.origin + ", " + order.name
+    #             else:
+    #                 quo = order.name
+    #             order.write(
+    #                 {
+    #                     "origin": quo,
+    #                     "name": self.env["ir.sequence"].next_by_code("sale.order"),
+    #                 }
+    #             )
+    #     return super().action_confirm()

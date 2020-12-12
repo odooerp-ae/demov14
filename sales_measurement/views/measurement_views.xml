@@ -22,7 +22,7 @@
                     <button type="object"
                             string="cancel"
                             name="action_cancel"
-                            states="measured,design"
+                            states="measured"
                             class="btn-primary"/>
 
                     <button type="object"
@@ -37,7 +37,7 @@
                             class="btn-primary"
                             attrs="{'invisible': ['|',('is_so_created', '=', True), ('state', '!=', 'design')]}"
                     />
-                    <field name="state" widget="statusbar" statusbar_visible="new,measured,design"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,measured,design,cancel"/>
 
                 </header>
                 <sheet>
