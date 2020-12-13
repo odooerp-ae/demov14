@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+
+		<record id="product_bom_wizard_view" model="ir.ui.view">
+			<field name="name">Import Product Bill Of Material</field>
+			<field name="model">product.bom.wizard</field>
+			<field name="arch" type="xml">
+				<form>
+					<group>
+					    <field name="import_option" widget="radio"/>
+						<field name="import_file"/>
+					</group>
+					<footer>
+						<button string="Import" name="import_bom" class="oe_highlight" type="object"/>
+						or
+                        <button name="cancel" string="Cancel" class="oe_link" special="cancel"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="product_bom_wizard_action" model="ir.actions.act_window">
+			<field name="name">Import Product Bill Of Material</field>
+			<field name="res_model">product.bom.wizard</field>
+			<field name="target">new</field>
+			<field name="view_id" ref="product_bom_wizard_view"/>
+			<field name="view_mode">form</field>
+		</record>
+
+		<record id="sale_order_import_bom_view" model="ir.ui.view">
+			<field name="name">Sale Order</field>
+			<field name="model">sale.order</field>
+			 <field name="inherit_id" ref="sale.view_order_form"/>
+			<field name="arch" type="xml">
+				<header position="inside">
+						<button name="%(product_bom_wizard_action)d"
+						string="Import Products BOM"
+                        type="action"
+                        class="btn-primary"/>
+				</header>
+			</field>
+		</record>
+
+	</data>
+</odoo>

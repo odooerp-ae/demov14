@@ -1,0 +1,6 @@
+Product,Product Variant,Quantity,UOM,Reference,BOM Type,Company,Component Name,Component Quantity,Component UOM
+Mo,,1,Units,13,Manufacture this product,My Company (San Francisco),material3,2,Units
+,,,Units,,,,material2,1,Units
+,,,Units,,,,material1,1,Units
+Conference Chair (CONFIG),Conference Chair (CONFIG) (Steel),,,,Manufacture this product,,bloc1,6,Units
+,,,,,,,bloc2,5,Units
