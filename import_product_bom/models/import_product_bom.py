@@ -178,8 +178,20 @@ class ProductBillwizard(models.TransientModel):
             else:
                 vals_to_be_updated = {}
                 for key in bom_val.keys():
-                    if bom_val.get(key) and key != 'product_tmpl_id':
+                    if bom_val.get(key) and key != 'product_tmpl_id'and key != 'bom_line_ids':
                         vals_to_be_updated[key] = bom_val.get(key)
 
                 product_tmp.bom_ids.sudo().write(vals_to_be_updated)
+                bom_lines = bom_val.get("bom_line_ids")
+                for line in bom_lines:
+                    matched_line = product_tmp.bom_ids.bom_line_ids.sudo().filtered(lambda m: m.product_id.id == line[2].get("product_id"))
+                    line_vals = {}
+                    if float(line[2].get("product_qty")):
+                        line_vals["product_qty"] = line[2].get("product_qty")
+
+                    if line[2].get("product_uom_id"):
+                        line_vals["product_uom_id"] = line[2].get("product_uom_id")
+
+                    matched_line.write(line_vals)
+
         return True
