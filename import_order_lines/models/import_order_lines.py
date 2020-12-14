@@ -65,7 +65,7 @@ class order_line_wizard(models.TransientModel):
                     if i == 0:
                         continue
                     else:
-                        exist_line = self.env['sale.order.line'].sudo().browse(int(field[0])) if field[0] else False
+                        exist_line = self.env['sale.order.line'].sudo().browse(int(float(field[0]))) if field[0] else False
 
                         if self.product_details_option == 'from_product':
                             values.update({
@@ -113,7 +113,7 @@ class order_line_wizard(models.TransientModel):
                     line = list(
                         map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value),
                             sheet.row(row_no)))
-                    exist_line = self.env['sale.order.line'].sudo().browse(int(line[0])) if line[0] else False
+                    exist_line = self.env['sale.order.line'].sudo().browse(int(float(line[0]))) if line[0] else False
 
                     if self.product_details_option == 'from_product':
                         values.update({
