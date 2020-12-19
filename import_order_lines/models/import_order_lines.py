@@ -27,6 +27,12 @@ except ImportError:
     _logger.debug('Cannot `import base64`.')
 
 
+class Sale(models.Model):
+    _inherit = 'sale.order'
+
+    allow_import_so_lines = fields.Boolean(related="company_id.allow_import_so_lines", store=True)
+
+
 class order_line_wizard(models.TransientModel):
     _name = 'order.line.wizard'
     _description = "Order Line Wizard"

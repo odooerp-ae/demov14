@@ -7,6 +7,7 @@
         'sale_stock',
     ],
     'data': [
+        "views/product_category_views.xml",
     ],
     'application': False,
     'installable': True,

@@ -34,10 +34,12 @@
 			 <field name="inherit_id" ref="sale.view_order_form"/>
 			<field name="arch" type="xml">
 				<header position="inside">
+					<field name="allow_import_bom" invisible="1"/>
 						<button name="%(product_bom_wizard_action)d"
-						string="Import Products BOM"
-                        type="action"
-                        class="btn-primary"/>
+								attrs="{'invisible': [('allow_import_bom', '=', False)]}"
+								string="Import Products BOM"
+                        		type="action"
+                        		class="btn-primary"/>
 				</header>
 			</field>
 		</record>

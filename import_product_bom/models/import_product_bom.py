@@ -23,6 +23,12 @@ except ImportError:
     _logger.debug('Cannot `import base64`.')
 
 
+class Sale(models.Model):
+    _inherit = 'sale.order'
+
+    allow_import_bom = fields.Boolean(related="company_id.allow_import_bom", store=True)
+
+
 class ProductBillwizard(models.TransientModel):
     _name = 'product.bom.wizard'
     _description = "Product Bill of Material Wizard"

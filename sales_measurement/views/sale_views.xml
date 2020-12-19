@@ -32,15 +32,21 @@
                 <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'sent', 'rejected'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('is_auto_confirm', '=', True),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
+                <attribute name="attrs">{'invisible': ['|','|', ('is_auto_confirm', '=', True),('is_confirmed', '=', True),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="planned_final_measurement_date" attrs="{'invisible': [('state','not in', ['advance_payment'])]}"/>
+                <field name="actual_final_measurement_date" attrs="{'readonly':True, 'invisible': [('state','not in', ['final_measurement','production_payment','payment_finalize'])]}"/>
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="quotation_ref" readonly="1" />
                 <field name="measure_request_id" readonly="1"/>
                 <field name="is_auto_confirm" invisible="1"/>
+                <field name="last_state" invisible="1"/>
+                <field name="is_confirmed" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='amount_total']" position="after">
                 <field name="paid_amount" readonly="1"/>
@@ -66,13 +72,56 @@
         </field>
     </record>
 
+    <record id="view_quotation_tree_with_onboarding" model="ir.ui.view">
+        <field name="name">sale.order</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="quotation_ref" />
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_quotation_tree" model="ir.ui.view">
+        <field name="name">sale.order</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="paid_amount" optional="show"/>
+                <field name="unpaid_amount" optional="show"/>
+                <field name="paid_amount_percent" optional="show"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_order_tree" model="ir.ui.view">
+        <field name="name">sale.order</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="paid_amount" optional="show"/>
+                <field name="unpaid_amount" optional="show"/>
+                <field name="paid_amount_percent" optional="show"/>
+            </xpath>
+
+        </field>
+    </record>
+
     <record id="sale.action_orders" model="ir.actions.act_window">
         <field name="name">Contracts</field>
         <field name="domain">[('state', 'not in', ('rejected', 'draft', 'sent'))]</field>
     </record>
 
     <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
-        <field name="domain">[('state', 'in', ('rejected', 'draft', 'sent'))]</field>
+        <field name="domain">[]</field>
     </record>
 
     <record model="ir.ui.menu" id="sale.menu_sale_order">

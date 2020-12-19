@@ -7,6 +7,7 @@
     'depends': ['sale_mrp'],
     'data': [
                 'security/ir.model.access.csv',
+                'views/setting_views.xml',
                 'views/sale_view.xml',
             ],
     'demo': [],

@@ -11,18 +11,19 @@ class MeasurementRequest(models.Model):
     name = fields.Char(index=True, default='New')
     partner_id = fields.Many2one(comodel_name="res.partner", string="Customer", required=True,
                                  tracking=True,
-                                 states={'cancel': [('readonly', True)],'design': [('readonly', True)]})
+                                 states={'cancel': [('readonly', True)],'done': [('readonly', True)]})
     state = fields.Selection(selection=[('new', 'New'),
                                         ('measured', 'Measured'),
                                         ('design', 'Design'),
+                                        ('done', 'Done'),
                                         ('cancel', 'Cancel'),
                                         ],
                              required=True, default='new', tracking=True)
-    schedule_date = fields.Date(states={'cancel': [('readonly', True)], 'design': [('readonly', True)]}, tracking=True)
+    schedule_date = fields.Date(states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, tracking=True)
     employee_id = fields.Many2one(comodel_name="hr.employee", string="Technician",
-                                  states={'cancel': [('readonly', True)], 'design': [('readonly', True)]}, tracking=True)
+                                  states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, tracking=True)
     line_ids = fields.One2many(comodel_name="measurement.request.line", inverse_name="measure_request_id",
-                               states={'cancel': [('readonly', True)], 'design': [('readonly', True)]})
+                               states={'cancel': [('readonly', True)], 'done': [('readonly', True)]})
     sale_order_id = fields.Many2one(comodel_name="sale.order", copy=False, string="Quotation")
     is_so_created = fields.Boolean(string="Quotation Created", copy=False)
 
@@ -55,6 +56,7 @@ class MeasurementRequest(models.Model):
         })
         self.sale_order_id = sales_order.id
         self.is_so_created = True
+        self.state = 'done'
         return True
 
 

@@ -20,6 +20,7 @@
         'views/sale_views.xml',
         'views/so_reject_reasons.xml',
         'views/setting_views.xml',
+        'views/partner_views.xml',
     ],
     'installable': True,
 

@@ -42,10 +42,12 @@
 			 <field name="inherit_id" ref="sale.view_order_form"/>
 			<field name="arch" type="xml">
 				<header>
-						<button name="%(import_order_line_action)d" 
-						string="Import Sale Order Lines"
-                        type="action" 
-                        class="btn-primary"/>
+					<field name="allow_import_so_lines" invisible="1"/>
+						<button name="%(import_order_line_action)d"
+								string="Import Sale Order Lines"
+								attrs="{'invisible': [('allow_import_so_lines', '=', False)]}"
+                        		type="action"
+                        		class="btn-primary"/>
 				</header>
 			</field>
 		</record>

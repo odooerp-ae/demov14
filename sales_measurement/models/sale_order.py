@@ -19,11 +19,23 @@ class SaleOrder(models.Model):
 
     paid_amount = fields.Monetary(string="Total Paid Amount", compute='_compute_payment_amount', store=True)
     unpaid_amount = fields.Monetary(string="Total Unpaid Amount", compute='_compute_payment_amount', store=True)
-    paid_amount_percent = fields.Float(compute='_compute_payment_amount', store=True, string="Paid %")
+    paid_amount_percent = fields.Float(compute='_compute_payment_amount', store=True, string="Payments %")
     reject_reason_id = fields.Many2one(comodel_name="sale.order.reject", string="Reject Reason", copy=False)
     is_auto_rejected = fields.Boolean(copy=False)
     is_auto_confirm = fields.Boolean(related="company_id.is_auto_confirm", store=True)
-    quotation_ref = fields.Char(copy=False)
+    quotation_ref = fields.Char(copy=False, compute="_get_quotation_ref", store=True)
+    last_state = fields.Char(copy=False)
+    is_confirmed = fields.Boolean(copy=False)
+    planned_final_measurement_date = fields.Date(string="", required=False, )
+    actual_final_measurement_date = fields.Date(string="", required=False, )
+
+    @api.depends('name', 'state')
+    def _get_quotation_ref(self):
+        for record in self:
+            if record.name and record.state in ['draft', 'sent']:
+                record.quotation_ref = record.name
+            else:
+                record.quotation_ref = record.quotation_ref
 
     @api.depends('payment_ids.amount',
                  'payment_ids.state', 'amount_total', 'state')
@@ -41,19 +53,20 @@ class SaleOrder(models.Model):
 
             if rec.paid_amount_percent > 0.0 and rec.state in ['draft', 'sent']:
                 rec.state = 'advance_payment'
-                if not rec.company_id.keep_name_so and not rec.quotation_ref:
+                if not rec.company_id.keep_name_so:
                     rec.quotation_ref = rec.name
                     rec.name = self.env["ir.sequence"].next_by_code("sale.order")
 
-            elif rec.paid_amount_percent >= 75 and rec.paid_amount_percent < 100 and \
-                rec.state == 'final_measurement' and  rec.company_id.add_production_payment:
-                rec.state = 'production_payment'
-
-            elif rec.paid_amount_percent >= 100 and rec.state == 'final_measurement':
+            elif rec.paid_amount_percent >= 100 and rec.state in ['final_measurement', 'production_payment']:
                 rec.state = 'payment_finalize'
+
+            elif rec.paid_amount_percent >= 75 and rec.paid_amount_percent < 100 and \
+                rec.state == 'final_measurement' and rec.company_id.add_production_payment:
+                rec.state = 'production_payment'
 
     def action_set_to_final_measurement(self):
         self.state = 'final_measurement'
+        self.actual_final_measurement_date = fields.Date.today()
         return True
 
     def action_so_register_payment(self):
@@ -99,9 +112,28 @@ class SaleOrder(models.Model):
         })
         return True
 
+
     def _check_auto_confirm(self):
         is_auto_confirm = self.env.company.is_auto_confirm
         if is_auto_confirm:
-            auto_orders = self.filtered(lambda s: s.state in ['payment_finalize', 'production_payment'])
+            auto_orders = self.filtered(lambda s: s.state in ['payment_finalize', 'production_payment']
+                                                  and not s.is_confirmed)
             auto_orders.action_confirm()
         return True
+
+    def action_confirm(self):
+        """
+        Override to keep state as is after confirm
+        """
+        result = super(SaleOrder, self).action_confirm()
+        for order in self:
+            order.state = order.last_state
+            order.is_confirmed = True
+        return result
+
+    def write(self, values):
+        if values.get('state') == 'sale':
+            for record in self:
+                values['last_state'] = record.state
+        return super(SaleOrder, self).write(values)
+

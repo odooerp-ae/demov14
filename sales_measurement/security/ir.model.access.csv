@@ -3,3 +3,4 @@ access_measurement_request,measurement_request,model_measurement_request,,1,1,1,
 access_measurement_request_line,measurement_request_line,model_measurement_request_line,,1,1,1,1
 access_sale_order_reject,sale_order_reject,model_sale_order_reject,,1,1,1,1
 access_sale_order_reject_wizard,sale_order_reject_wizard,model_sale_order_reject_wizard,,1,1,1,1
+access_res_district,res_district,model_res_district,,1,1,1,1
