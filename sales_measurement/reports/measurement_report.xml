@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_measurement_request">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+                        <div class="page">
+                            <div class="oe_structure"/>
+
+                            <h2 class="mt16">
+                                <span t-esc="doc.name"/>
+                            </h2>
+                            <div class="row" id="informations">
+                                <div t-if="doc.partner_id" class="col-3">
+                                    <strong>Customer:</strong>
+                                    <span  t-field="doc.partner_id"/>
+                                </div>
+                                <div t-if="doc.schedule_date" class="col-3">
+                                    <strong>Schedule Date:</strong>
+                                    <span  t-field="doc.schedule_date"/>
+                                </div>
+                                <div t-if="doc.employee_id" class="col-3">
+                                    <strong>Technician:</strong>
+                                    <span  t-field="doc.employee_id"/>
+                                </div>
+                                <div t-if="doc.sale_order_id" class="col-3">
+                                    <strong>Quotation:</strong>
+                                    <span  t-field="doc.sale_order_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="action_report_measurement_request" model="ir.actions.report">
+            <field name="name">Measurement Request</field>
+            <field name="model">measurement.request</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sales_measurement.report_measurement_request</field>
+            <field name="report_file">sales_measurement.report_measurement_request</field>
+            <field name="print_report_name">'Request - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_measurement_request"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

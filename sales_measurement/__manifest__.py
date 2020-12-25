@@ -21,6 +21,7 @@
         'views/so_reject_reasons.xml',
         'views/setting_views.xml',
         'views/partner_views.xml',
+        'reports/measurement_report.xml',
     ],
     'installable': True,
 

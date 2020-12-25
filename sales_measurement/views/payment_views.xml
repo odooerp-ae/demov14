@@ -15,7 +15,6 @@
                 <field name="partner_type" invisible="1" force_save="1"/>
                 <field name="company_id" invisible="1" force_save="1"/>
                 <field name="partner_id" invisible="1" force_save="1"/>
-                <field name="suitable_journal_ids" invisible="1"/>
 
                 <field name="show_partner_bank_account" invisible="1"/>
                 <field name="require_partner_bank_account" invisible="1"/>
@@ -25,7 +24,7 @@
 
                 <group>
                     <group name="group1">
-                        <field name="journal_id" required="1"/>
+                        <field name="journal_id" required="1"  domain="[('type', 'in', ('bank', 'cash'))]"/>
                         <field name="payment_method_id" widget="radio"
                                required="1"
                                attrs="{'invisible': [('hide_payment_method', '=', True)]}"/>
