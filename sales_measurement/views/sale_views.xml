@@ -37,6 +37,9 @@
             <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': True}</attribute>
             </xpath>
+            <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'not in', ['production_payment','payment_finalize'])]}</attribute>
+            </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="planned_final_measurement_date" attrs="{'invisible': [('state','not in', ['advance_payment'])]}"/>
                 <field name="actual_final_measurement_date" attrs="{'readonly':True, 'invisible': [('state','not in', ['final_measurement','production_payment','payment_finalize'])]}"/>
@@ -126,5 +129,47 @@
 
     <record model="ir.ui.menu" id="sale.menu_sale_order">
         <field name="name">Contracts</field>
-      </record>
+    </record>
+
+    <record id="view_final_measurement_order_tree" model="ir.ui.view">
+        <field name="name">sale.order</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="priority">1000</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_status']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="planned_final_measurement_date" />
+                <field name="actual_final_measurement_date" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_final_measurement_orders" model="ir.actions.act_window">
+        <field name="name">Final Measurement</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', 'in', ['final_measurement','advance_payment'])]</field>
+         <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_final_measurement_order_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')})]"/>
+
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            <!-- Add Text Here -->
+          </p><p>
+            <!-- More details about what a user can do with this object will be OK -->
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="final_measurement_orders"
+              name="Final Measurement"
+              parent="sale.sale_order_menu"
+              action="action_final_measurement_orders" sequence="100"/>
+
 </odoo>

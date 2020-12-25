@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+
+		<record id="sale_import_order_wizard_view" model="ir.ui.view">
+			<field name="name">Import Order Lines</field>
+			<field name="model">import.order.line.wizard</field>
+			<field name="arch" type="xml">
+				<form>
+					<group>
+					    <field name="import_option" widget="radio"/>
+						<field name="sale_order_file"/>
+						<field name="import_type"  widget="radio"/>
+					</group>
+					<footer>
+						<button string="Import" name="import_sol" class="oe_highlight" type="object"/>
+						or
+                        <button name="cancel" string="Cancel" class="oe_link" special="cancel"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_import_order_line" model="ir.actions.act_window">
+			<field name="name">Import Order Lines</field>
+			<field name="res_model">import.order.line.wizard</field>
+			<field name="target">new</field>
+			<field name="view_id" ref="sale_import_order_wizard_view"/>
+			<field name="view_mode">form</field>
+		</record>
+
+		<record id="sale_order_inherit_view" model="ir.ui.view">
+			<field name="name">Sale Order</field>
+			<field name="model">sale.order</field>
+			 <field name="inherit_id" ref="sale.view_order_form"/>
+			<field name="arch" type="xml">
+				<header>
+					<field name="alu_import_so_lines" invisible="1"/>
+						<button name="%(action_import_order_line)d"
+								string="Import SOL/BOM"
+								attrs="{'invisible': [('alu_import_so_lines', '=', False)]}"
+                        		type="action"
+                        		class="btn-primary"/>
+				</header>
+			</field>
+		</record>
+
+	</data>
+</odoo>

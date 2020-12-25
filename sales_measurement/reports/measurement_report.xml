@@ -13,23 +13,42 @@
                                 <span t-esc="doc.name"/>
                             </h2>
                             <div class="row" id="informations">
-                                <div t-if="doc.partner_id" class="col-3">
+                                <div  class="col-3">
                                     <strong>Customer:</strong>
-                                    <span  t-field="doc.partner_id"/>
+                                    <span t-if="doc.partner_id" t-field="doc.partner_id"/>
                                 </div>
-                                <div t-if="doc.schedule_date" class="col-3">
+                                <div  class="col-3">
                                     <strong>Schedule Date:</strong>
-                                    <span  t-field="doc.schedule_date"/>
+                                    <span t-if="doc.schedule_date" t-field="doc.schedule_date"/>
                                 </div>
-                                <div t-if="doc.employee_id" class="col-3">
+                                <div  class="col-3">
                                     <strong>Technician:</strong>
-                                    <span  t-field="doc.employee_id"/>
+                                    <span t-if="doc.employee_id" t-field="doc.employee_id"/>
                                 </div>
-                                <div t-if="doc.sale_order_id" class="col-3">
+                                <div  class="col-3">
                                     <strong>Quotation:</strong>
-                                    <span  t-field="doc.sale_order_id"/>
+                                    <span t-if="doc.sale_order_id" t-field="doc.sale_order_id"/>
                                 </div>
                             </div>
+                            <br/>
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                    <tr>
+                                        <td>Product</td>
+                                        <td>Description</td>
+                                        <td>Quantity</td>
+                                        <td>Price</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="doc.line_ids" t-as="line">
+                                        <td><span t-esc="line.product_id.name"/></td>
+                                        <td><span t-esc="line.description"/></td>
+                                        <td><span t-esc="line.quantity"/></td>
+                                        <td><span t-esc="line.price"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </t>
                 </t>
