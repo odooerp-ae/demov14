@@ -5,7 +5,6 @@ from odoo.exceptions import Warning, ValidationError
 import binascii
 import tempfile
 import xlrd
-from tempfile import TemporaryFile
 from odoo.exceptions import UserError
 import logging
 
@@ -55,12 +54,13 @@ class order_line_wizard(models.TransientModel):
                 csv_reader = csv.reader(data_file, delimiter=',')
 
                 file_reader.extend(csv_reader)
-                print("/////////////////////////// file_reader",file_reader)
 
             except Exception:
                 raise ValidationError(_("Please select any file or You have selected invalid file"))
 
-            values = {}
+            order_lines = {}
+            bom_lines = {}
+
             for i in range(len(file_reader)):
                 field = list(map(str, file_reader[i]))
                 values = dict(zip(keys, field))
@@ -68,31 +68,63 @@ class order_line_wizard(models.TransientModel):
                     if i == 0:
                         continue
                     else:
-                        exist_line = self.env['sale.order.line'].sudo().browse(int(float(field[0]))) if field[0] else False
+                        if self.import_type == "order_line":
+                            price = float(field[6])
+                            if price > 0.0:
+                                product_refrence = field[0]
+                                exist_line = order_lines.get(product_refrence)
+                                if not exist_line:
+                                    order_lines[product_refrence] = {'product': product_refrence,
+                                                                     'description': field[1],
+                                                                     'product_uom_qty': 1,
+                                                                     'price': float(field[6]),
+                                                                     }
+                                else:
+                                    exist_line['price'] += float(field[6])
+                            else:
+                                product = field[2].split('.')[0]
+                                product_obj_search = self.env['product.product'].search([('default_code', '=', product)])
+                                exist_line = order_lines.get(product)
+                                if not exist_line:
+                                    order_lines[product] = {'product': product,
+                                                            'description': field[1],
+                                                            'product_uom_qty': float(field[4]),
+                                                            'product_uom': field[5],
+                                                            'price': product_obj_search.lst_price,
+                                                            }
+                                else:
 
-                        if self.product_details_option == 'from_product':
-                            values.update({
-                                'product': field[1],
-                                'quantity': field[2]
-                            })
-                        elif self.product_details_option == 'from_xls':
-                            values.update({'product': field[1],
-                                           'quantity': field[2],
-                                           'uom': field[3],
-                                           'description': field[4],
-                                           'price': field[5],
-                                           'tax': field[6]
-                                           })
+                                    exist_line['product_uom_qty'] += float(field[4])
                         else:
-                            values.update({
-                                'product': field[1],
-                                'quantity': field[2],
-                            })
-                        if exist_line:
+                            price = float(field[6])
+                            if price > 0.0:
+                                product_reference = field[0]
+                                exist_product = bom_lines.get(product_reference)
 
-                            res = self.update_order_line(exist_line, values)
-                        else:
-                            res = self.create_order_line(values)
+                                component = field[2].split('.')[0]
+
+                                if not exist_product:
+                                    bom_lines[product_reference] = {'bom_line_ids': {
+                                        component: {
+                                        'product_qty':  float(field[4]),
+                                        'product_uom_id':  field[5],
+                                    }}}
+
+                                else:
+                                    exist_component = exist_product['bom_line_ids'].get(component)
+
+                                    if not exist_component:
+                                        exist_product['bom_line_ids'][component] = {
+                                            'product_qty':  float(field[4]),
+                                            'product_uom_id':  field[5],
+                                        }
+                                    else:
+                                        exist_component['product_qty'] += float(field[4])
+
+
+            if bom_lines:
+                res = self.update_order_line_bom(bom_lines)
+
         else:
             try:
                 fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
@@ -106,6 +138,7 @@ class order_line_wizard(models.TransientModel):
             except Exception:
                 raise ValidationError(_("Please select any file or You have selected invalid file"))
             order_lines = {}
+            bom_lines = {}
             for row_no in range(sheet.nrows):
 
                 val = {}
@@ -116,45 +149,70 @@ class order_line_wizard(models.TransientModel):
                     line = list(
                         map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value),
                             sheet.row(row_no)))
-                    print("////////////////////////////////////// line", line)
-                    price = float(line[6])
-                    if price > 0.0:
-                        product_refrence = line[0]
-                        exist_line = order_lines.get(product_refrence)
-                        if not exist_line:
-                            order_lines[product_refrence]= {'product': product_refrence,
-                                           'description': line[1],
-                                           'product_uom_qty': 1,
-                                           'price': float(line[6]),
-                                           }
+                    if self.import_type == "order_line":
+                        price = float(line[6])
+                        if price > 0.0:
+                            product_refrence = line[0]
+                            exist_line = order_lines.get(product_refrence)
+                            if not exist_line:
+                                order_lines[product_refrence]= {'product': product_refrence,
+                                               'description': line[1],
+                                               'product_uom_qty': 1,
+                                               'price': float(line[6]),
+                                               }
+                            else:
+                                exist_line['price'] += float(line[6])
                         else:
-                            exist_line['price'] += float(line[6])
+                            product = line[2].split('.')[0]
+                            product_obj_search = self.env['product.product'].search([('default_code', '=',product)])
+                            exist_line = order_lines.get(product)
+                            if not exist_line:
+                                order_lines[product] = {'product': product,
+                                                                 'description': line[1],
+                                                                 'product_uom_qty': float(line[4]),
+                                                                 'product_uom': line[5],
+                                                                 'price': product_obj_search.lst_price,
+                                                                 }
+                            else:
+
+                                exist_line['product_uom_qty'] += float(line[4])
                     else:
-                        product = line[2].split('.')[0]
-                        product_obj_search = self.env['product.product'].search([('default_code', '=',product)])
-                        exist_line = order_lines.get(product)
-                        if not exist_line:
-                            order_lines[product] = {'product': product,
-                                                             'description': line[1],
-                                                             'product_uom_qty': float(line[4]),
-                                                             'product_uom': line[5],
-                                                             'price': product_obj_search.lst_price,
-                                                             }
-                        else:
+                        price = float(line[6])
+                        if price > 0.0:
+                            product_reference = line[0]
+                            exist_product = bom_lines.get(product_reference)
 
-                            exist_line['product_uom_qty'] += float(line[4])
+                            component = line[2].split('.')[0]
+
+                            if not exist_product:
+                                bom_lines[product_reference] = {'bom_line_ids': {
+                                    component: {
+                                    'product_qty':  float(line[4]),
+                                    'product_uom_id':  line[5],
+                                }}}
+
+                            else:
+                                exist_component = exist_product['bom_line_ids'].get(component)
+
+                                if not exist_component:
+                                    exist_product['bom_line_ids'][component] = {
+                                        'product_qty':  float(line[4]),
+                                        'product_uom_id':  line[5],
+                                    }
+                                else:
+                                    exist_component['product_qty'] += float(line[4])
 
 
-            print("////////////////////////////////////// order_lines", order_lines)
-
-        res = self.create_order_line(order_lines)
+        print("/////////////////////// bom_lines", bom_lines)
+        if bom_lines:
+            res = self.update_order_line_bom(bom_lines)
+        if order_lines:
+            res = self.create_order_line(order_lines)
         return res
 
     def create_order_line(self, values):
         sale_order = self.env['sale.order'].browse(self._context.get('active_id'))
-        print("///////////////////// values")
         for key, line in values.items():
-            print("/////////////////////////// line3333", line)
             product = line['product']
             product_id = False
             product_obj_search = self.env['product.product'].search([('default_code', '=', product)])
@@ -193,4 +251,27 @@ class order_line_wizard(models.TransientModel):
 
         return True
 
+    def update_order_line_bom(self, all_bom_val):
+        for bom_product, bom_values in all_bom_val.items():
 
+            product = self.env['product.product'].sudo().search([('default_code', '=', bom_product)])
+            product_tmp = product.product_tmpl_id
+            bom_val = {
+                'product_tmpl_id': product_tmp.id,
+                'product_uom_id': product_tmp.uom_id.id,
+                'bom_line_ids': []
+                       }
+            for key, values in bom_values['bom_line_ids'].items():
+                component = self.env['product.product'].sudo().search(['|',('default_code', '=', str(key)), ('name', '=', str(key))])
+
+                component_uom_id = self.env['uom.uom'].sudo().search([('name', '=', values.get('product_uom_id'))], limit=1)
+                if not component:
+                    raise ValidationError(_("The component with reference {} doesn't exist".format(key)))
+                bom_val['bom_line_ids'].append((0, 0, {
+                    'product_id': component.id,
+                    'product_qty': values.get('product_qty'),
+                    'product_uom_id': component_uom_id.id
+                }))
+            bom_id = self.env['mrp.bom'].sudo().create(bom_val)
+
+        return True
