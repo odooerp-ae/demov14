@@ -11,4 +11,4 @@ class District(models.Model):
 class Partner(models.Model):
     _inherit = "res.partner"
 
-    district_id = fields.Many2one(comodel_name="res.district", required=True)
+    district_id = fields.Many2one(comodel_name="res.district", required=False)

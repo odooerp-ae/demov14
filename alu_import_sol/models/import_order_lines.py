@@ -235,7 +235,7 @@ class order_line_wizard(models.TransientModel):
                 else:
                     uom_id = product_id.uom_id
                 if not uom_id:
-                    raise ValidationError("There is no UOM for product  {}".format(product_id))
+                    raise ValidationError("There is no UOM for product  {}".format(product_id.name))
                 line_vals = {
                     'order_id': sale_order.id,
                     'product_id': product_id.id,
