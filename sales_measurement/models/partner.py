@@ -12,3 +12,6 @@ class Partner(models.Model):
     _inherit = "res.partner"
 
     district_id = fields.Many2one(comodel_name="res.district", required=False)
+    zone = fields.Char(string="منطقة", required=True)
+    section = fields.Char(string="قطعة", required=True)
+    building = fields.Char(string="المنزل", required=True)
