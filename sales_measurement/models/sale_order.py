@@ -4,6 +4,12 @@ from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 
 
+class ProductTemplate(models.Model):
+    _inherit = "product.template"
+
+    type = fields.Selection(default='product')
+
+
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 

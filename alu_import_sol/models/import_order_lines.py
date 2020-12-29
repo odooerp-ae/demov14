@@ -39,9 +39,15 @@ class order_line_wizard(models.TransientModel):
     import_option = fields.Selection([('csv', 'CSV File'), ('xls', 'XLS File')], string='Select', default='csv')
     import_type = fields.Selection(selection=[('order_line', 'Sale Order Line'), ('bom', 'Bill of Material')],
                                    required=True, default='order_line')
+    import_line_type = fields.Selection(selection=[('import', 'Import Lines'), ('update', 'Update Lines')],
+                                        required=True, default='import')
 
     def import_sol(self):
         res = False
+        sale_order = self.env['sale.order'].browse(self._context.get('active_id'))
+        so_lines = sale_order.sudo().order_line
+        if self.import_line_type == 'import':
+            so_lines.unlink()
         if self.import_option == 'csv':
             keys = ['Code Project', 'Sub Project Code', 'SAP Code', 'Color', 'Qty', 'UM', 'price']
             try:
@@ -72,6 +78,12 @@ class order_line_wizard(models.TransientModel):
                             price = float(field[6])
                             if price > 0.0:
                                 product_refrence = field[0]
+
+                                if self.import_line_type == 'update':
+                                    matching_so_line = so_lines.filtered(lambda l: l.product_id.default_code == product_refrence)
+                                    if not matching_so_line:
+
+                                        continue
                                 exist_line = order_lines.get(product_refrence)
                                 if not exist_line:
                                     order_lines[product_refrence] = {'product': product_refrence,
@@ -83,6 +95,12 @@ class order_line_wizard(models.TransientModel):
                                     exist_line['price'] += float(field[6])
                             else:
                                 product = field[2].split('.')[0]
+                                if self.import_line_type == 'update':
+                                    matching_so_line = so_lines.filtered(
+                                        lambda l: l.product_id.default_code == product_refrence)
+                                    if not matching_so_line:
+
+                                        continue
                                 product_obj_search = self.env['product.product'].search([('default_code', '=', product)])
                                 exist_line = order_lines.get(product)
                                 if not exist_line:
@@ -139,6 +157,7 @@ class order_line_wizard(models.TransientModel):
                 raise ValidationError(_("Please select any file or You have selected invalid file"))
             order_lines = {}
             bom_lines = {}
+
             for row_no in range(sheet.nrows):
 
                 val = {}
@@ -150,9 +169,16 @@ class order_line_wizard(models.TransientModel):
                         map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value),
                             sheet.row(row_no)))
                     if self.import_type == "order_line":
+
                         price = float(line[6])
                         if price > 0.0:
                             product_refrence = line[0]
+                            if self.import_line_type == 'update':
+                                matching_so_line = so_lines.filtered(
+                                    lambda l: l.product_id.default_code == product_refrence)
+                                if not matching_so_line:
+
+                                    continue
                             exist_line = order_lines.get(product_refrence)
                             if not exist_line:
                                 order_lines[product_refrence]= {'product': product_refrence,
@@ -164,6 +190,11 @@ class order_line_wizard(models.TransientModel):
                                 exist_line['price'] += float(line[6])
                         else:
                             product = line[2].split('.')[0]
+                            if self.import_line_type == 'update':
+                                matching_so_line = so_lines.filtered(
+                                    lambda l: l.product_id.default_code == product)
+                                if not matching_so_line:
+                                    continue
                             product_obj_search = self.env['product.product'].search([('default_code', '=',product)])
                             exist_line = order_lines.get(product)
                             if not exist_line:
@@ -203,7 +234,6 @@ class order_line_wizard(models.TransientModel):
                                     exist_component['product_qty'] += float(line[4])
 
 
-        print("/////////////////////// bom_lines", bom_lines)
         if bom_lines:
             res = self.update_order_line_bom(bom_lines)
         if order_lines:
@@ -212,8 +242,14 @@ class order_line_wizard(models.TransientModel):
 
     def create_order_line(self, values):
         sale_order = self.env['sale.order'].browse(self._context.get('active_id'))
+
         for key, line in values.items():
             product = line['product']
+            if self.import_line_type == 'update':
+                matching_so_line = sale_order.order_line.filtered(
+                    lambda l: l.product_id.default_code == product)
+                if matching_so_line:
+                    matching_so_line.unlink()
             product_id = False
             product_obj_search = self.env['product.product'].search([('default_code', '=', product)])
 

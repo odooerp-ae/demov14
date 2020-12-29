@@ -11,6 +11,9 @@
 					    <field name="import_option" widget="radio"/>
 						<field name="sale_order_file"/>
 						<field name="import_type"  widget="radio"/>
+						<field name="import_line_type" widget="radio"
+							   atts="{'invisible':[('import_type','!=', 'order_line')]}"/>
+
 					</group>
 					<footer>
 						<button string="Import" name="import_sol" class="oe_highlight" type="object"/>
