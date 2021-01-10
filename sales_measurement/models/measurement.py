@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api,fields, models,  _
+from odoo.exceptions import UserError
 
 
 class MeasurementRequest(models.Model):
@@ -26,6 +27,7 @@ class MeasurementRequest(models.Model):
                                states={'cancel': [('readonly', True)], 'done': [('readonly', True)]})
     sale_order_id = fields.Many2one(comodel_name="sale.order", copy=False, string="Quotation")
     is_so_created = fields.Boolean(string="Quotation Created", copy=False)
+    cancel_reason = fields.Text(required=False)
 
     @api.model
     def create(self, values):
@@ -34,18 +36,19 @@ class MeasurementRequest(models.Model):
 
     def set_to_measured(self):
         self.state = 'measured'
+        if self.message_attachment_count <= 0.0:
+
+                raise UserError(_("You should insert attachments before move to measured"))
         return True
 
     def set_to_design(self):
         self.state = 'design'
+        if self.message_attachment_count < 2:
+            raise UserError(_("You should insert at least two attachments before move to design"))
         return True
 
     def action_new(self):
         self.state = 'new'
-        return True
-
-    def action_cancel(self):
-        self.state = 'cancel'
         return True
 
     def action_create_quotation(self):

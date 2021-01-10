@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from collections import defaultdict
+from dateutil.relativedelta import relativedelta
+from itertools import groupby
+
+from odoo import api, fields, models, _,SUPERUSER_ID
+from odoo.exceptions import ValidationError,UserError
 
 
 class PickingType(models.Model):
@@ -32,3 +35,5 @@ class Picking(models.Model):
             raise ValidationError(_("Sale Order of this picking is not fully Paid"))
 
         return super(Picking, self).button_validate()
+
+

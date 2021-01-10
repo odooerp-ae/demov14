@@ -19,9 +19,10 @@
                             states="measured"
                             class="btn-primary"/>
 
-                    <button type="object"
-                            string="cancel"
-                            name="action_cancel"
+                    <button type="action"
+                            string="Cancel"
+                            name="%(measurement_cancel_wizard_action)d"
+                            context="{'default_request_id': active_id}"
                             states="new,measured,design"
                             class="btn-primary"/>
 
@@ -68,6 +69,18 @@
                                 </tree>
                             </field>
                         </page>
+                <page name="cancel_reason" string="Cancel Reason"
+                      attrs="{'invisible':[('state','!=','cancel')],'readonly': True}">
+                    <group>
+                        <group>
+                            <field name="cancel_reason"
+                                   attrs="{'invisible':[('state','!=','cancel')],'readonly':True}"/>
+                        </group>
+                        <group>
+                        </group>
+
+                    </group>
+                </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

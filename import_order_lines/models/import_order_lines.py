@@ -33,6 +33,12 @@ class Sale(models.Model):
     allow_import_so_lines = fields.Boolean(related="company_id.allow_import_so_lines", store=True)
 
 
+class ProductCategory(models.Model):
+    _inherit = 'product.category'
+
+    is_special = fields.Boolean()
+
+
 class order_line_wizard(models.TransientModel):
     _name = 'order.line.wizard'
     _description = "Order Line Wizard"
@@ -161,7 +167,11 @@ class order_line_wizard(models.TransientModel):
             if product_obj_search:
                 product_id = product_obj_search
             elif not product_obj_search and sale_order_brw.company_id.create_product_import:
-                product_id = self.env['product.product'].create([('name', '=', values['product'])])
+                product_vals = {"name": values['product']}
+                special_categ = self.env['product.category'].sudo().search([('is_special', '=', True)], limit=1)
+                if special_categ:
+                    product_vals['categ_id'] = special_categ.id
+                product_id = self.env['product.product'].sudo().create(product_vals)
 
             else:
                 raise ValidationError(_('%s product is not found".') % values.get('product'))
@@ -228,7 +238,11 @@ class order_line_wizard(models.TransientModel):
                 product_id = product_obj_search
             else:
                 if self.import_prod_option == 'name' and sale_order_brw.company_id.create_product_import:
-                    product_id = self.env['product.product'].create({'name': product, 'lst_price': values.get('price')})
+                    product_vals = {"name": product,  'lst_price': values.get('price')}
+                    special_categ = self.env['product.category'].sudo().search([('is_special', '=', True)], limit=1)
+                    if special_categ:
+                        product_vals['categ_id'] = special_categ.id
+                    product_id = self.env['product.product'].create(product_vals)
             if not product_id:
                 raise ValidationError(_(
                     '%s product is not found" .\n If you want to create product then first select Import Product By Name option .') % values.get(

@@ -46,7 +46,7 @@ class order_line_wizard(models.TransientModel):
         res = False
         sale_order = self.env['sale.order'].browse(self._context.get('active_id'))
         so_lines = sale_order.sudo().order_line
-        if self.import_line_type == 'import':
+        if self.import_line_type == 'import' and self.import_type == 'order_line':
             so_lines.unlink()
         if self.import_option == 'csv':
             keys = ['Code Project', 'Sub Project Code', 'SAP Code', 'Color', 'Qty', 'UM', 'price']
@@ -257,10 +257,15 @@ class order_line_wizard(models.TransientModel):
                 product_id = product_obj_search
             else:
                 if sale_order.company_id.create_product_import:
-                    product_id = self.env['product.product'].create({'name': line['description'],
-                                                                     'default_code': product,
-                                                                     'lst_price': line['price'],
-                                                                     })
+                    product_vals = {'name': line['description'],
+                                    'default_code': product,
+                                    'lst_price': line['price'],
+                                     }
+                    special_categ = self.env['product.category'].sudo().search([('is_special', '=', True)], limit=1)
+                    if special_categ:
+                        product_vals['categ_id'] = special_categ.id
+
+                    product_id = self.env['product.product'].create(product_vals)
             if not product_id:
                 raise ValidationError(_(
                     '%s product is not found" .\n .') % product)
@@ -271,7 +276,7 @@ class order_line_wizard(models.TransientModel):
                 else:
                     uom_id = product_id.uom_id
                 if not uom_id:
-                    raise ValidationError("There is no UOM for product  {}".format(product_id.name))
+                    raise ValidationError("There is no UOM for product  {} with code {}".format(product_id.name, product))
                 line_vals = {
                     'order_id': sale_order.id,
                     'product_id': product_id.id,
@@ -301,8 +306,12 @@ class order_line_wizard(models.TransientModel):
                 component = self.env['product.product'].sudo().search(['|',('default_code', '=', str(key)), ('name', '=', str(key))])
 
                 component_uom_id = self.env['uom.uom'].sudo().search([('name', '=', values.get('product_uom_id'))], limit=1)
+
                 if not component:
                     raise ValidationError(_("The component with reference {} doesn't exist".format(key)))
+                if not component_uom_id:
+                    raise ValidationError(_("This UOM {} not found in system".format(values.get('product_uom_id'))))
+
                 bom_val['bom_line_ids'].append((0, 0, {
                     'product_id': component.id,
                     'product_qty': values.get('product_qty'),

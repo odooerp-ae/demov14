@@ -32,8 +32,10 @@ class SaleOrder(models.Model):
     quotation_ref = fields.Char(copy=False, compute="_get_quotation_ref", store=True)
     last_state = fields.Char(copy=False)
     is_confirmed = fields.Boolean(copy=False)
-    planned_final_measurement_date = fields.Date(string="", required=False, )
-    actual_final_measurement_date = fields.Date(string="", required=False, )
+    is_final_approve = fields.Boolean(copy=False)
+    planned_final_measurement_date = fields.Date(copy=False)
+    actual_final_measurement_date = fields.Date(copy=False)
+    final_approve_date = fields.Date(copy=False)
 
     @api.depends('name', 'state')
     def _get_quotation_ref(self):
@@ -73,6 +75,12 @@ class SaleOrder(models.Model):
     def action_set_to_final_measurement(self):
         self.state = 'final_measurement'
         self.actual_final_measurement_date = fields.Date.today()
+        return True
+
+    def action_final_approve(self):
+        self.is_final_approve = True
+        self.final_approve_date = fields.Date.today()
+
         return True
 
     def action_so_register_payment(self):
@@ -117,7 +125,6 @@ class SaleOrder(models.Model):
                       "is_auto_rejected": True,
         })
         return True
-
 
     def _check_auto_confirm(self):
         is_auto_confirm = self.env.company.is_auto_confirm

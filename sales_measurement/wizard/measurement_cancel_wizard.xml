@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="measurement_cancel_wizard" model="ir.ui.view">
+            <field name="name">measurement.cancel.wizard</field>
+            <field name="model">measurement.cancel.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="cancel_reason"/>
+                    </group>
+                    <footer>
+                        <button name="cancel_request" string="Cancel" type="object" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="measurement_cancel_wizard_action" model="ir.actions.act_window">
+            <field name="name">Cancel Reasons</field>
+            <field name="res_model">measurement.cancel.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

@@ -15,3 +15,4 @@ class Partner(models.Model):
     zone = fields.Char(string="منطقة", required=True)
     section = fields.Char(string="قطعة", required=True)
     building = fields.Char(string="المنزل", required=True)
+    auto_confirm_rfq = fields.Boolean(copy=False, help="Confirm RQF generated automatic from this vendor")

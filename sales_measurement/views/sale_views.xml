@@ -6,6 +6,12 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <div class="oe_title" position="before">
+                <field name="is_final_approve" invisible="1"/>
+                <widget name="web_ribbon" title="Final Approved"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('is_final_approve', '=', False)]}"/>
+            </div>
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" name="action_view_payments"
                         string="Payments" type="object"
@@ -20,16 +26,20 @@
                 />
                 <button name="action_set_to_final_measurement" id="action_set_to_final_measurement"
                         type="object" class="oe_highlight" string="Final Measurement"
-                        attrs="{'invisible': [('state', 'not in', ('advance_payment'))]}"
+                        attrs="{'invisible': [('state', 'not in', ['advance_payment'])]}"
+                />
+                <button name="action_final_approve" id="action_final_approve"
+                        type="object" class="oe_highlight" string="Final Approve"
+                        attrs="{'invisible': ['|', ('is_final_approve', '=', True),('state', 'in', ['draft','sent','cancel', 'rejected'])]}"
                 />
                 <button name="%(sale_order_reject_wizard_action)d"
                         string="Reject" context="{'default_sale_order_id': active_id}"
-                        attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'sent',  'rejected'])]}"
                         type="action"/>
 
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'sent', 'rejected'])]}</attribute>
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'sent', 'rejected', 'cancel'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
                 <attribute name="attrs">{'invisible': ['|','|', ('is_auto_confirm', '=', True),('is_confirmed', '=', True),('state', 'not in', ['final_measurement', 'production_payment', 'payment_finalize'])]}</attribute>
@@ -41,8 +51,9 @@
                 <attribute name="attrs">{'invisible': [('state', 'not in', ['production_payment','payment_finalize'])]}</attribute>
             </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="planned_final_measurement_date" attrs="{'invisible': [('state','not in', ['advance_payment'])]}"/>
+                <field name="planned_final_measurement_date" attrs="{'required': [('state', 'not in', ['draft', 'sent'])]}"/>
                 <field name="actual_final_measurement_date" attrs="{'readonly':True, 'invisible': [('state','not in', ['final_measurement','production_payment','payment_finalize'])]}"/>
+                <field name="final_approve_date" attrs="{'readonly':True}"/>
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="quotation_ref" readonly="1" />
