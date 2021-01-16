@@ -44,7 +44,7 @@ class MeasurementRequest(models.Model):
     def set_to_design(self):
         self.state = 'design'
         if self.message_attachment_count < 2:
-            raise UserError(_("You should insert at least two attachments before move to design"))
+            raise UserError(_("You have to attach design for current measure"))
         return True
 
     def action_new(self):

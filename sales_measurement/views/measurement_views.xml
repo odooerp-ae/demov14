@@ -51,7 +51,7 @@
                         <group>
                             <field name="partner_id" widget="res_partner_many2one"
                                    context="{'search_default_customer':1, 'show_address': 1}"
-                                   options="{'always_reload': True}"/>
+                                   options="{'always_reload': True, 'no_quick_create':True}"/>
                             <field name="schedule_date"/>
                             <field name="employee_id"/>
                             <field name="sale_order_id" readonly="1"/>
