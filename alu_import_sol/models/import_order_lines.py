@@ -31,7 +31,7 @@ class Sale(models.Model):
     alu_import_so_lines = fields.Boolean(related="company_id.alu_import_so_lines", store=True)
 
 
-class order_line_wizard(models.TransientModel):
+class OderLineWizard(models.TransientModel):
     _name = 'import.order.line.wizard'
     _description = "Import Order Line Wizard"
 
@@ -251,8 +251,8 @@ class order_line_wizard(models.TransientModel):
                 matching_so_line = sale_order.order_line.filtered(
                     lambda l: l.product_id.default_code == product)
                 if matching_so_line:
-                    matching_so_line.unlink()
                     matching_so_line.sudo().product_id.bom_ids.unlink()
+                    matching_so_line.unlink()
 
             product_id = False
             product_obj_search = self.env['product.product'].search([('default_code', '=', product)])
