@@ -47,7 +47,9 @@ class order_line_wizard(models.TransientModel):
         sale_order = self.env['sale.order'].browse(self._context.get('active_id'))
         so_lines = sale_order.sudo().order_line
         if self.import_line_type == 'import' and self.import_type == 'order_line':
+            bom_ids = so_lines.product_id.bom_ids
             so_lines.unlink()
+            bom_ids.unlink()
         if self.import_option == 'csv':
             keys = ['Code Project', 'Sub Project Code', 'SAP Code', 'Color', 'Qty', 'UM', 'price']
             try:
@@ -250,6 +252,8 @@ class order_line_wizard(models.TransientModel):
                     lambda l: l.product_id.default_code == product)
                 if matching_so_line:
                     matching_so_line.unlink()
+                    matching_so_line.sudo().product_id.bom_ids.unlink()
+
             product_id = False
             product_obj_search = self.env['product.product'].search([('default_code', '=', product)])
 
@@ -297,6 +301,8 @@ class order_line_wizard(models.TransientModel):
 
             product = self.env['product.product'].sudo().search([('default_code', '=', bom_product)])
             product_tmp = product.product_tmpl_id
+            product_tmp.bom_ids.unlink()
+
             bom_val = {
                 'product_tmpl_id': product_tmp.id,
                 'product_uom_id': product_tmp.uom_id.id,

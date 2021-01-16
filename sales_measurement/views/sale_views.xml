@@ -48,7 +48,7 @@
                 <attribute name="attrs">{'invisible': True}</attribute>
             </xpath>
             <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', 'not in', ['production_payment','payment_finalize'])]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('invoice_status', '!=', 'to invoice'),('state', 'not in', ['production_payment','payment_finalize'])]}</attribute>
             </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="planned_final_measurement_date" attrs="{'required': [('state', 'not in', ['draft', 'sent'])]}"/>
