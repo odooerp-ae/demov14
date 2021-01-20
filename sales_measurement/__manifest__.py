@@ -25,6 +25,7 @@
         'views/partner_views.xml',
         'views/picking_views.xml',
         'views/purchase_views.xml',
+        'views/product_views.xml',
         'reports/measurement_report.xml',
     ],
     'installable': True,

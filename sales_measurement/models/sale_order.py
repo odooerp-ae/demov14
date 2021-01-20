@@ -6,12 +6,6 @@ from odoo.tools import float_is_zero, float_compare
 from datetime import datetime, timedelta
 
 
-class ProductTemplate(models.Model):
-    _inherit = "product.template"
-
-    type = fields.Selection(default='product')
-
-
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
@@ -130,6 +124,9 @@ class SaleOrder(models.Model):
 
     def action_so_register_payment(self):
         journal_id = self.env['account.move']._search_default_journal(('bank', 'cash'))
+        if not self.planned_final_measurement_date:
+            raise UserError(_("You must insert Planned final measure date "))
+
         ctx = {
             'default_sale_order_id': self.id,
             'default_partner_id': self.partner_id.id,

@@ -8,3 +8,4 @@ from . import picking
 from . import account_move
 from . import partner
 from . import purchase
+from . import product

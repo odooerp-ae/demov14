@@ -11,6 +11,26 @@ class AccountPayment(models.Model):
     show_credit_card = fields.Boolean(compute="_show_credit_card", store=True)
     credit_card_no = fields.Char()
 
+    @api.constrains('sale_order_id', 'amount'
+                    'sale_order_id.order_line', 'sale_order_id.paid_amount', '')
+    def _check_sale_paid_amount(self):
+        """
+        Check if there is ale order with products with no bom and paid amount is above 75 %
+        """
+        for payment in self:
+            sale_order = payment.sale_order_id
+            if payment.currency_id == sale_order.currency_id:
+                total_payment_amount = payment.amount + sale_order.paid_amount
+            else:
+                total_payment_amount = sale_order.paid_amount + sale_order.currency_id._convert(payment.amount, payment.currency_id, payment.company_id, payment.date)
+            products_with_no_bom = payment.sale_order_id.order_line.mapped('product_id').filtered(lambda p: p.has_manufacture_route and not p.bom_ids)
+
+            paid_percentage = (total_payment_amount / sale_order.amount_total) * 100 if sale_order.amount_total else 0.0
+
+            if paid_percentage >= 75 and products_with_no_bom:
+                raise ValidationError(_("There is no Bill of Material of type manufacture or kit found for the products {}."
+                         " Please define a Bill of Material for those products.".format(products_with_no_bom.mapped("name"))))
+
     @api.depends('journal_id')
     def _show_credit_card(self):
         for record in self:
