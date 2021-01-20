@@ -12,7 +12,7 @@ class AccountPayment(models.Model):
     credit_card_no = fields.Char()
 
     @api.constrains('sale_order_id', 'amount'
-                    'sale_order_id.order_line', 'sale_order_id.paid_amount', '')
+                    'sale_order_id.order_line', 'sale_order_id.paid_amount')
     def _check_sale_paid_amount(self):
         """
         Check if there is ale order with products with no bom and paid amount is above 75 %
