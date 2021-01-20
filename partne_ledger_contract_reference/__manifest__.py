@@ -6,6 +6,7 @@
     "depends": ["account_reports",
                 "sales_measurement"],
     "data": [
+        "views/account_views.xml",
 
     ],
     "installable": True,

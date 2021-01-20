@@ -3,6 +3,21 @@
 from odoo import fields, models, api
 
 
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    sale_order_id = fields.Many2one(comodel_name="sale.order", compute="_get_sale_id",
+                                    string="Contract Ref.", store=False)
+
+    @api.depends('sale_line_ids', 'sale_line_ids.order_id')
+    def _get_sale_id(self):
+        for record in self:
+            if record.sale_line_ids:
+                record.sale_order_id = record.sale_line_ids.order_id.id
+            else:
+                record.sale_order_id = False
+
+
 class AccountMoveInherit(models.Model):
     _inherit = 'account.move'
 

@@ -29,7 +29,7 @@ class PartnerLedger(models.AbstractModel):
             contract_reference = self.env['account.payment'].sudo().search([('id', '=', aml['payment_id'])]).sale_order_id.name
         else:
             caret_type = 'account.move'
-            contract_reference = self.env['account.move.line'].sudo().search([('move_name', '=', aml['move_name'])]).sale_line_ids.order_id.name
+            contract_reference = self.env['account.move.line'].sudo().search([('move_name', '=', aml['move_name'])]).sale_order_id.name
 
         date_maturity = aml['date_maturity'] and format_date(self.env, fields.Date.from_string(aml['date_maturity']))
         columns = [
