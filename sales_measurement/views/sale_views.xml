@@ -22,7 +22,7 @@
 
                 <button name="action_so_register_payment" id="account_invoice_payment_btn"
                         type="object" class="oe_highlight" string="Register Payment"
-                        attrs="{'invisible': [('state', 'in', ('done', 'cancel', 'rejected'))]}"
+                        attrs="{'invisible': [('state', 'in', ('done', 'cancel', 'rejected', 'payment_finalize'))]}"
                 />
                 <button name="action_set_to_final_measurement" id="action_set_to_final_measurement"
                         type="object" class="oe_highlight" string="Final Measurement"

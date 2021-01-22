@@ -51,7 +51,7 @@ class OderLineWizard(models.TransientModel):
             so_lines.unlink()
             bom_ids.unlink()
         if self.import_option == 'csv':
-            keys = ['Code Project', 'Sub Project Code', 'SAP Code', 'Color', 'Qty', 'UM', 'price']
+            keys = ['Code Project', 'Sub Project Code', 'SAP Code', 'Color', 'Qty', 'UM', 'price', 'Item-Qty']
             try:
                 csv_data = base64.b64decode(self.sale_order_file)
 
@@ -90,11 +90,12 @@ class OderLineWizard(models.TransientModel):
                                 if not exist_line:
                                     order_lines[product_refrence] = {'product': product_refrence,
                                                                      'description': field[1],
-                                                                     'product_uom_qty': 1,
+                                                                     'product_uom_qty': float(field[7] or '0'),
                                                                      'price': float(field[6]),
                                                                      }
                                 else:
                                     exist_line['price'] += float(field[6])
+                                    exist_line['product_uom_qty'] += float(field[7] or '0')
                             else:
                                 product = field[2].split('.')[0]
                                 if self.import_line_type == 'update':
@@ -185,11 +186,13 @@ class OderLineWizard(models.TransientModel):
                             if not exist_line:
                                 order_lines[product_refrence]= {'product': product_refrence,
                                                'description': line[1],
-                                               'product_uom_qty': 1,
+                                               'product_uom_qty': float(line[7] or '0') ,
                                                'price': float(line[6]),
                                                }
                             else:
                                 exist_line['price'] += float(line[6])
+                                exist_line['product_uom_qty'] += float(line[7] or '0')
+
                         else:
                             product = line[2].split('.')[0]
                             if self.import_line_type == 'update':

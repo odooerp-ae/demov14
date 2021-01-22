@@ -11,7 +11,7 @@ class AccountPayment(models.Model):
     show_credit_card = fields.Boolean(compute="_show_credit_card", store=True)
     credit_card_no = fields.Char()
 
-    @api.constrains('sale_order_id', 'amount'
+    @api.constrains('sale_order_id', 'amount', ''
                     'sale_order_id.order_line', 'sale_order_id.paid_amount')
     def _check_sale_paid_amount(self):
         """
@@ -26,6 +26,9 @@ class AccountPayment(models.Model):
             products_with_no_bom = payment.sale_order_id.order_line.mapped('product_id').filtered(lambda p: p.has_manufacture_route and not p.bom_ids)
 
             paid_percentage = (total_payment_amount / sale_order.amount_total) * 100 if sale_order.amount_total else 0.0
+
+            if paid_percentage >= 75 and not sale_order.is_final_approve:
+                raise UserError(_("You must final approve order before pay more than 75% of amount"))
 
             if paid_percentage >= 75 and products_with_no_bom:
                 raise ValidationError(_("There is no Bill of Material of type manufacture or kit found for the products {}."

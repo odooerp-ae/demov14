@@ -111,6 +111,12 @@ class SaleOrder(models.Model):
             if order.state not in ('draft', 'sent', 'cancel', 'rejected') and not order.planned_final_measurement_date:
                 raise UserError(_("You must insert Planned final measure date "))
 
+    @api.constrains('is_final_approve', 'state')
+    def _check_final_approve(self):
+        for order in self:
+            if order.state in ('payment_finalize', 'production_payment') and not order.is_final_approve:
+                raise UserError(_("You must final approve order before move to this state"))
+
     def action_set_to_final_measurement(self):
         self.state = 'final_measurement'
         self.actual_final_measurement_date = fields.Date.today()
