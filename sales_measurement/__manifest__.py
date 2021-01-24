@@ -4,6 +4,7 @@
     'summary': 'Measurement Requests',
     'version': '14.0.1.0.0',
     'category': 'Sales',
+    "author": "Oakland",
     'depends': [
         'sale_mrp',
         'account_accountant',

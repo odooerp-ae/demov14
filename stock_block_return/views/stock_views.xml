@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_type_form" model="ir.ui.view">
+        <field name="name">stock.picking.type</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_picking_type_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='show_reserved']" position="after">
+                <field name="prevent_return" />
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='show_reserved']" position="after">
+                <field name="prevent_return" invisible="1" />
+            </xpath>
+
+            <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                <attribute name="attrs">{'invisible':  ['|', ('state', '!=', 'done'),('prevent_return', '=', True)]}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

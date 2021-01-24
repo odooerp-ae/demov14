@@ -1,7 +1,8 @@
 {
     'name': 'Restrict Sales Order for Out of Stock Items',
     'description': 'Restrict Sales Order for Out of Stock Items',
-    'version': '13.0.0',
+    'version': '14.0.0',
+    "author": "Oakland",
     'website': '',
     'depends': [
         'sale_stock',

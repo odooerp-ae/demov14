@@ -4,10 +4,9 @@
     'version': '14.0.0.0',
     'summary': 'import sale order lines from excel or csv',
     'category': 'Sales',
-    "price": 15,
     'description': """
     """,
-    'author': 'Okland',
+    'author': 'Oakland',
     'depends': ['base', 'sale_management'],
     'data': [
                 'security/ir.model.access.csv',

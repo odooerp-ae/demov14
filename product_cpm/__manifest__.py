@@ -3,6 +3,7 @@
     'name': 'Product CPM',
     'summary': 'Product CPM',
     'version': '14.0.1.0.0',
+    "author": "Oakland",
     'category': 'Stock',
     'depends': [
         'stock',
