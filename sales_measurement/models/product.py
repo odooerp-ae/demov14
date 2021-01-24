@@ -11,6 +11,7 @@ class ProductTemplate(models.Model):
 
     type = fields.Selection(default='product')
     has_manufacture_route = fields.Boolean(compute='_has_manufacture_route')
+    is_measure_item = fields.Boolean(string="Measure item")
 
     @api.depends('route_from_categ_ids', 'route_from_categ_ids.rule_ids',
                  'route_ids', 'route_ids.rule_ids')

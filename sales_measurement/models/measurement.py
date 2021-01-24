@@ -69,7 +69,7 @@ class MeasurementLine(models.Model):
     measure_request_id = fields.Many2one(comodel_name="measurement.request", required=True,
                                  ondelete='cascade')
     product_id = fields.Many2one(comodel_name="product.product", required=True,
-                                 domain=[("type", '=', "service")])
+                                 domain=[("type", '=', "service"), ("is_measure_item", "=", True)])
     quantity = fields.Float(default=1)
     description = fields.Char()
     price = fields.Float()
