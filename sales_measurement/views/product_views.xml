@@ -9,6 +9,13 @@
                 <field name="is_measure_item" />
                 <field name="has_manufacture_route" invisible="1" />
             </field>
+            <field name="uom_po_id" position="after">
+                    <field name="product_uom_category_id" invisible="1" />
+                    <field name="sale_uom_ids"
+                           domain="[('category_id', '=', product_uom_category_id)]"
+                           options="{'no_create': True}"
+                           widget="many2many_tags"/>
+                </field>
 
         </field>
     </record>

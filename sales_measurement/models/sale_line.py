@@ -9,6 +9,21 @@ from datetime import datetime, timedelta
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    sale_uom_ids = fields.Many2many(comodel_name="uom.uom",
+                                   compute="_get_sale_uom_domain")
+
+    product_uom = fields.Many2one('uom.uom', string='Unit of Measure',
+                                  domain="[('id', 'in', sale_uom_ids)]")
+
+    @api.depends('product_id', 'product_id.sale_uom_ids', 'product_id.uom_id')
+    def _get_sale_uom_domain(self):
+        for line in self:
+            if line.product_id:
+                ids = line.product_id.sale_uom_ids.ids + [line.product_id.uom_id.id]
+                line.sale_uom_ids = [(6, 0, ids)] if ids else []
+            else:
+                line.sale_uom_ids = []
+
     def _expected_date(self):
         self.ensure_one()
         order_date = fields.Datetime.from_string(self.order_id.date_order if self.order_id.state in ['sale', 'done', 'payment_finalize', 'production_payment'] else fields.Datetime.now())

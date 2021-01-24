@@ -12,6 +12,8 @@ class ProductTemplate(models.Model):
     type = fields.Selection(default='product')
     has_manufacture_route = fields.Boolean(compute='_has_manufacture_route')
     is_measure_item = fields.Boolean(string="Measure item")
+    sale_uom_ids = fields.Many2many(comodel_name="uom.uom", string="Sale UOMs")
+    product_uom_category_id = fields.Many2one('uom.category', related='uom_id.category_id', readonly=True)
 
     @api.depends('route_from_categ_ids', 'route_from_categ_ids.rule_ids',
                  'route_ids', 'route_ids.rule_ids')
