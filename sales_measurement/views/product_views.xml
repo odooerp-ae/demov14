@@ -7,6 +7,10 @@
         <field name="arch" type="xml">
             <field name="categ_id" position="after">
                 <field name="is_measure_item" />
+                <field name="article_number" />
+                <field name="phenix_ref" />
+                <field name="article_ar_desc" />
+                <field name="product_line" />
                 <field name="has_manufacture_route" invisible="1" />
             </field>
             <field name="uom_po_id" position="after">

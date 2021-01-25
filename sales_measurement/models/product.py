@@ -10,6 +10,10 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     type = fields.Selection(default='product')
+    article_number = fields.Char(string="Article Number")
+    article_ar_desc = fields.Char(string="Article Arabic Description")
+    phenix_ref = fields.Char(string="Phenix Reference")
+    product_line = fields.Char()
     has_manufacture_route = fields.Boolean(compute='_has_manufacture_route')
     is_measure_item = fields.Boolean(string="Measure item")
     sale_uom_ids = fields.Many2many(comodel_name="uom.uom", string="Sale UOMs")
