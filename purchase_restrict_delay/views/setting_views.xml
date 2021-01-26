@@ -6,18 +6,41 @@
         <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@id='auto_receipt_reminder']" position="after">
-                 <div class="col-12 col-lg-6 o_setting_box" id="days_max_rfq">
+                <div class="col-12 col-lg-6 o_setting_box" id="rfq_reminder_days">
                     <div class="o_setting_right_pane">
-                     <label for="days_max_rfq"/>
-						<span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company"/>
-						<div class="text-muted">
-							Max Days to confirm RFQ and convert to PO
-						</div>
-						<div class="content-group">
-							<div class="mt16">
-								<span><field name="days_max_rfq" class="oe_inline"/> days</span>
-							</div>
-						</div>
+                        <label for="rfq_reminder_days"/>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                              aria-label="Values set here are company-specific." groups="base.group_multi_company"/>
+                        <div class="text-muted">
+                            Days used in send reminder mail to confirm a RFQ
+                        </div>
+                        <div class="content-group">
+                            <div class="mt16">
+                                <span>
+                                    <field name="rfq_reminder_days" class="oe_inline"/>
+                                    days
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6 o_setting_box" id="po_delivery_reminder_days">
+                    <div class="o_setting_right_pane">
+                        <label for="po_delivery_reminder_days"/>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                              aria-label="Values set here are company-specific." groups="base.group_multi_company"/>
+                        <div class="text-muted">
+Days used in send reminder mail to complete PO Delivery
+                        </div>
+                        <div class="content-group">
+                            <div class="mt16">
+                                <span>
+                                    <field name="po_delivery_reminder_days" class="oe_inline"/>
+                                    days
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </xpath>

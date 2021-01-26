@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record forcecreate="True" id="rfq_send_reminder_mail" model="ir.cron">
+        <field name="name">RFQ Confirm reminder</field>
+        <field name="active" eval="True" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall">1</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="state">code</field>
+        <field name="code">model._send_rfq_confirm_reminder_mail()</field>
+    </record>
+
+    <record forcecreate="True" id="po_delivery_send_reminder_mail" model="ir.cron">
+        <field name="name">Complete PO Delivery reminder</field>
+        <field name="active" eval="True" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall">1</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="state">code</field>
+        <field name="code">model._send_po_delivery_reminder_mail()</field>
+    </record>
+</odoo>

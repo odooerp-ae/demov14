@@ -2,13 +2,17 @@
 {
     'name': 'Purchase Restrict Delay',
     'version': '14.0.0.0',
-    'summary': 'Restrict Confirm RFQ for limited period from order date',
-    'category': 'Sales',
+    'summary': '',
+    'category': 'Purchases',
     'description': """
+    Send notification mail for confirm  RFQ after limited period,
+    Also Send notification mail if po is not fully delivered after limited period,
     """,
     'author': 'Oakland',
     'depends': ['purchase'],
     'data': [
+                'data/mail_templates.xml',
+                'data/ir_cron_data.xml',
                 'views/setting_views.xml',
             ],
     'demo': [],

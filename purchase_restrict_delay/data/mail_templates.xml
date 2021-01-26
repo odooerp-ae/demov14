@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_rfq_confirm_reminder" model="mail.template">
+            <field name="name">Confirm RFQ Reminder</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) |safe}</field>
+            <field name="subject">${object.company_id.name} RFQ (Ref ${object.name or 'n/a' })</field>
+            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear ${object.partner_id.name}
+                        % if object.partner_id.parent_id:
+                        (${object.partner_id.parent_id.name})
+                        % endif
+                        <br/>
+                        <br/>
+                        Here is a reminder that RFQ
+                        <strong>${object.name}</strong>
+                        is expected for
+                        % if object.date_order:
+                        <strong>${format_date(object.date_order)}</strong>.
+                        % else:
+                        <span/>.
+                        % endif
+                        Could you please confirm it?
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="purchase.report_purchase_quotation"/>
+            <field name="report_name">RFQ_${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="email_template_po_delivery_reminder" model="mail.template">
+            <field name="name">Complete PO Delivery Reminder</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) |safe}</field>
+            <field name="subject">${object.company_id.name} PO (Ref ${object.name or 'n/a' })</field>
+            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear ${object.partner_id.name}
+                        % if object.partner_id.parent_id:
+                        (${object.partner_id.parent_id.name})
+                        % endif
+                        <br/>
+                        <br/>
+                        Here is a reminder that PO
+                        <strong>${object.name}</strong>
+                        is expected to Be delivered
+                        Could you please complete delivering it?
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="purchase.action_report_purchase_order"/>
+            <field name="report_name">PO_${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>
